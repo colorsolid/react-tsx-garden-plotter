@@ -1,5 +1,8 @@
 import React, {ChangeEvent} from 'react';
 import Button from 'react-bootstrap/Button';
+import Nav from 'react-bootstrap/Nav';
+import Navbar from 'react-bootstrap/Navbar';
+import Container from 'react-bootstrap/Container';
 
 import {plantTypes} from '../Global';
 
@@ -13,59 +16,88 @@ const plantAreas = [
 
 interface ToolBarProps {
     selectedType: string,
-    changeType: (type: string) => void,
+    selectedMode: string,
+    hoverCoordinates: number[],
+    hoverType: string,
+    changeModeAndType: (type: string, mode: string) => void,
     clearSquares: () => void,
     selectionStarted: boolean,
-    cancelSelection: () => void
+    cancelSelection: () => void,
+    isMobile: boolean
 }
 
-export function Toolbar({selectedType, changeType, clearSquares, selectionStarted, cancelSelection}: ToolBarProps) {
+export function Toolbar(
+    {
+        selectedType,
+        selectedMode,
+        hoverCoordinates,
+        hoverType,
+        changeModeAndType,
+        clearSquares,
+        selectionStarted,
+        cancelSelection,
+        isMobile
+    }: ToolBarProps) {
     return (
-        <div id={'toolbar'}>
-            <Button
-                onClick={clearSquares}
-            >
-                clear
-            </Button>
-            <div className={'toolbar-divider'}></div>
-            Garden space:&nbsp;
-            {plantAreas.map((type: string) =>
-                <Button
-                    key={`btn-${type}`}
-                    className={type === selectedType ? 'btn selected' : 'btn'}
-                    onClick={() => {
-                        changeType(type)
-                    }}
-                >
-                    {type.split('-')[0]}
-                </Button>
-            )}
-            <div className={'toolbar-divider'}></div>
-            <Button className={plantTypesKeys.includes(selectedType) ? 'selected' : ''}
-                    onClick={() => changeType((
-                        document.querySelector('#plant-select') as HTMLInputElement)!.value)}
-            >
-                plant&nbsp;
-                <select
-                    id={'plant-select'}
-                    value={selectedType}
-                    onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-                        changeType(event.target.value)
-                    }}
-                >
-                    {plantTypesKeys.map((type: string) =>
-                        <option key={`option-${type}`}>
-                            {type}
-                        </option>
-                    )}
-                </select>
-            </Button>
-            {
-                selectionStarted &&
-                <button className={'btn'} onClick={() => cancelSelection()}>cancel</button>
-            }
-            <div className={'toolbar-divider'}></div>
-
+        <div id={'toolbar'} >
+                        <Button variant={'danger'}
+                                size={'sm'}
+                                onClick={clearSquares}
+                        >
+                            clear
+                        </Button>
+                        {/*<div className={'toolbar-divider'}></div>*/}
+                        Garden space:&nbsp;
+                        {plantAreas.map((mode: string) =>
+                            <Button variant={mode === selectedMode ? 'primary' : 'outline-dark'}
+                                    size={'sm'}
+                                    key={`btn-${mode}`}
+                                    onClick={() => {
+                                        changeModeAndType(selectedType, mode);
+                                    }}
+                            >
+                                {mode.split('-')[0]}
+                            </Button>
+                        )}
+                        {/*<div className={'toolbar-divider'}></div>*/}
+                        <Button variant={selectedMode === 'plant' ? 'primary' : 'outline-dark'}
+                                size={'sm'}
+                                onClick={() => changeModeAndType((
+                                    document.querySelector('#plant-select') as HTMLInputElement)!.value, 'plant')}
+                        >
+                            plant&nbsp;
+                            <select
+                                id={'plant-select'}
+                                value={selectedType}
+                                onChange={(event: ChangeEvent<HTMLSelectElement>) => {
+                                    changeModeAndType(event.target.value, 'plant')
+                                }}
+                            >
+                                {plantTypesKeys.map((type: string) =>
+                                    <option key={`option-${type}`}>
+                                        {type}
+                                    </option>
+                                )}
+                            </select>
+                        </Button>
+                        {isMobile && <Button
+                            size={'sm'}
+                            variant={selectedMode === 'inspect' ? 'primary' : 'outline-dark'}
+                            onClick={() => changeModeAndType(selectedType, 'inspect')}
+                        >
+                            inspect
+                        </Button>}
+                        {
+                            selectionStarted &&
+                            <Button variant={'dark'} size={'sm'} onClick={() => cancelSelection()}>cancel</Button>
+                        }
+                        {/*<div className={'toolbar-divider'}></div>*/}
+                        <span className={'toolbar-info'}>
+                        <span
+                            className={'coordinates'}>{hoverCoordinates ? '(' + hoverCoordinates.map(coordinate => coordinate + 1).reverse().join(', ') + ')' : ''}
+                        </span>
+                            &nbsp;{hoverType !== 'nothing' ? hoverType : ''}
+                        </span>
         </div>
     );
 }

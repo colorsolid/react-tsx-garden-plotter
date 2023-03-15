@@ -19,7 +19,7 @@ code {
 }
 
 #toolbar {
-
+    text-transform: capitalize;
 }
 
 #outer-container {
@@ -34,7 +34,7 @@ code {
     overflow: hidden;
 }
 
-.row {
+.row-custom {
     display: table;
     border-collapse: separate;
     width: max-content;
@@ -43,8 +43,8 @@ code {
 .square {
     background-color: white;
     display: table-cell;
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
     border: solid 1px rgba(80, 50, 20, 0.5);
     text-align: center;
     line-height: 30px;
@@ -79,10 +79,8 @@ code {
 }
 
 .btn {
-    border: black solid 1px;
-    border-radius: 5px;
-    padding: 5px;
     margin: 5px;
+    text-transform:capitalize;
 }
 
 .hover {
@@ -108,6 +106,17 @@ code {
 
 .highlight-good {
     border: solid #7ffc7f 1px !important;
+}
+
+.toolbar-info {
+    margin-left: 5px;
+    display: inline-block;
+    min-width: 200px;
+}
+
+.coordinates {
+    display: inline-block;
+    min-width: 60px;
 }
 
 .Basil {

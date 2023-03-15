@@ -4,8 +4,12 @@ import {Toolbar} from './components/Toolbar';
 import {Grid} from './components/Grid';
 import {SquareObject, plantTypes} from './Global';
 
-const WIDTH: number = 60;
-const HEIGHT: number = 60;
+import { isMobile } from 'detect-touch-device';
+
+console.log(isMobile)
+
+const WIDTH: number = 70;
+const HEIGHT: number = 70;
 
 interface AppProps {
 }
@@ -14,12 +18,14 @@ interface AppState {
     grid?: SquareObject[][],
     groups?: SquareObject[][],
     selectionStart?: number[] | null,
+    selectedMode?: string,
     selectedType?: string,
     groupIndex?: number,
-    hoverCoordinates?: number[] | null
+    hoverCoordinates?: number[] | null,
+    hoverType?: string
 }
 
-function copySquares(grid: SquareObject[][], removeHighlight: boolean = false): SquareObject[][] {
+function copyGrid(grid: SquareObject[][], removeHighlight: boolean = false): SquareObject[][] {
     const gridCopy: SquareObject[][] = [];
     for (let rowsIndex: number = 0; rowsIndex < HEIGHT; rowsIndex++) {
         gridCopy.push([]);
@@ -38,17 +44,18 @@ class App extends React.Component<AppProps, AppState> {
     constructor(props: object) {
         super(props);
         this.state =
-            JSON.parse(window.localStorage.getItem('state') || 'null') ||
+            // JSON.parse(window.localStorage.getItem('state') || 'null') ||
             {
                 grid: Array(WIDTH)
                     .fill(Array(HEIGHT)
                         .fill({type: 'nothing', state: ''})),
                 selectionStart: null,
-                selectedType: 'add-plant-area',
+                selectedMode: 'add-plant-area',
             }
     }
 
-    setState(state: AppState, callback: () => any = () => {}) {
+    setState(state: AppState, callback: () => any = () => {
+    }) {
         super.setState(state, () => {
             window.localStorage.setItem('state', JSON.stringify(this.state));
             callback();
@@ -56,13 +63,16 @@ class App extends React.Component<AppProps, AppState> {
     }
 
     handleClick(rowIndex: number, squareIndex: number) {
-        const gridCopy: SquareObject[][] = copySquares(this.state.grid!, true);
+        const gridCopy: SquareObject[][] = copyGrid(this.state.grid!, true);
         const square: SquareObject = gridCopy[rowIndex][squareIndex];
-        if (this.state.selectionStart) {
+        let gridHistory = this.state.grid!;
+
+        if (this.state.selectedMode === 'inspect') {
+
+        } else if (this.state.selectionStart) {
             this.fillSquares(rowIndex, squareIndex, gridCopy);
-            this.findEdges(gridCopy);
-        } else if (['add-plant-area', 'remove-plant-area'].includes(this.state.selectedType!) || square.plantArea) {
-            square.highlight = true;
+            this.drawCompatibility(gridCopy);
+        } else if (['add-plant-area', 'remove-plant-area'].includes(this.state.selectedMode!) || square.plantArea) {
             this.setState({
                 grid: gridCopy,
                 selectionStart: [rowIndex, squareIndex]
@@ -72,9 +82,17 @@ class App extends React.Component<AppProps, AppState> {
 
     handleMouseOver(rowIndex: number, squareIndex: number) {
         if (this.state.selectionStart) {
-            const gridCopy: SquareObject[][] = copySquares(this.state.grid!, true);
+            const gridCopy: SquareObject[][] = copyGrid(this.state.grid!, true);
             this.fillSquares(rowIndex, squareIndex, gridCopy, true);
         }
+        this.updateToolbarInfo(rowIndex, squareIndex);
+    }
+
+    updateToolbarInfo(rowIndex: number, squareIndex: number) {
+        this.setState({
+            hoverCoordinates: [rowIndex, squareIndex],
+            hoverType: this.state.grid![rowIndex][squareIndex].type
+        })
     }
 
     getStartAndEndRows(rowIndex: number, squareIndex: number) {
@@ -113,10 +131,10 @@ class App extends React.Component<AppProps, AppState> {
                 if (highlight) {
                     square.highlight = true;
                     // fill squares with plant area
-                } else if (this.state.selectedType === 'add-plant-area') {
+                } else if (this.state.selectedMode === 'add-plant-area') {
                     square.plantArea = true;
                     // remove plant area
-                } else if (this.state.selectedType === 'remove-plant-area') {
+                } else if (this.state.selectedMode === 'remove-plant-area') {
                     square.plantArea = false;
                     square.type = 'nothing';
                     // fill squares with plant if in plant area
@@ -144,17 +162,18 @@ class App extends React.Component<AppProps, AppState> {
         }
     }
 
-    changeType(type: string) {
+    changeModeAndType(type: string, mode: string) {
         this.setState({
-            selectedType: type
+            selectedType: type,
+            selectedMode: mode
         }, () => {
-            this.findEdges()
+            this.drawCompatibility()
         });
     }
 
-    findEdges(gridCopy: SquareObject[][] | null = null) {
+    drawCompatibility(gridCopy: SquareObject[][] | null = null) {
         if (gridCopy === null) {
-            gridCopy = copySquares(this.state.grid!);
+            gridCopy = copyGrid(this.state.grid!);
         }
 
         // loop through all squares in the grid and assign compatibility based on the offset squares types
@@ -217,11 +236,15 @@ class App extends React.Component<AppProps, AppState> {
     }
 
     clearSquares() {
+        const confirmation: boolean = window.confirm('Clear everything?')
+        if (!confirmation) {
+            return;
+        }
         const grid: SquareObject[][] = this.state.grid!
             .map(row => row.map((square: SquareObject) => {
                     return {
                         type: 'nothing',
-                        compatibility: 0,
+                        compatibility: null,
                         highlight: false,
                         plantArea: false
                     };
@@ -229,7 +252,8 @@ class App extends React.Component<AppProps, AppState> {
             );
         this.setState({
             grid: grid,
-            selectionStart: null
+            selectionStart: null,
+            selectedMode: 'add-plant-area'
         });
     }
 
@@ -259,10 +283,14 @@ class App extends React.Component<AppProps, AppState> {
             <React.Fragment>
                 <Toolbar
                     selectedType={this.state.selectedType!}
-                    changeType={this.changeType.bind(this)}
+                    selectedMode={this.state.selectedMode!}
+                    hoverCoordinates={this.state.hoverCoordinates!}
+                    hoverType={this.state.hoverType!}
+                    changeModeAndType={this.changeModeAndType.bind(this)}
                     clearSquares={this.clearSquares.bind(this)}
                     selectionStarted={!!this.state.selectionStart}
                     cancelSelection={this.cancelSelection.bind(this)}
+                    isMobile={isMobile}
                 />
                 <Grid
                     grid={this.state.grid!}
