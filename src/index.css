@@ -1,13 +1,231 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+#root {
+    background-color: #ccc;
+    width: 100%;
+}
+
+#toolbar {
+
+}
+
+#outer-container {
+    width: 100vw;
+    height: 90vh;
+    overflow: scroll;
+}
+
+#inner-container {
+    width: fit-content;
+    height: fit-content;
+    overflow: hidden;
+}
+
+.row {
+    display: table;
+    border-collapse: separate;
+    width: max-content;
+}
+
+.square {
+    background-color: white;
+    display: table-cell;
+    width: 30px;
+    height: 30px;
+    border: solid 1px rgba(80, 50, 20, 0.5);
+    text-align: center;
+    line-height: 30px;
+    color: black;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+    font-weight: bold;
+}
+
+@media (pointer: fine) {
+    .square:hover {
+        border: solid 1px greenyellow;
+    }
+}
+
+.nothing {
+    background-color: #131212;
+    color: white;
+}
+
+.plant-area {
+    background-color: #705342;
+}
+
+.selection-start {
+    border: solid 1px #ffffff;
+}
+
+.selected {
+    background-color: #61dafb;
+}
+
+.btn {
+    border: black solid 1px;
+    border-radius: 5px;
+    padding: 5px;
+    margin: 5px;
+}
+
+.hover {
+    border: solid 1px red;
+}
+
+.toolbar-divider {
+    display: inline-block;
+    border-right: solid 1px black;
+    padding-right: 10px;
+    margin-right: 10px;
+    height: 24px;
+    vertical-align: middle;
+}
+
+.highlight {
+    border: solid #ffffff 1px !important;
+}
+
+.highlight-bad {
+    border: solid red 1px !important;
+}
+
+.highlight-good {
+    border: solid #7ffc7f 1px !important;
+}
+
+.Basil {
+	background-color: rgba(169, 56, 61, 0.5)
+}
+
+.Beans {
+	background-color: rgba(30, 68, 136, 0.5)
+}
+
+.Broccoli {
+	background-color: rgba(75, 122, 233, 0.5)
+}
+
+.Carrots {
+	background-color: rgba(75, 103, 127, 0.5)
+}
+
+.Cauliflower {
+	background-color: rgba(30, 31, 249, 0.5)
+}
+
+.Chives {
+	background-color: rgba(26, 129, 61, 0.5)
+}
+
+.Cilantro {
+	background-color: rgba(56, 106, 110, 0.5)
+}
+
+.Corn {
+	background-color: rgba(136, 5, 5, 0.5)
+}
+
+.Cucumbers {
+	background-color: rgba(201, 138, 133, 0.5)
+}
+
+.Dill {
+	background-color: rgba(30, 222, 154, 0.5)
+}
+
+.Garlic {
+	background-color: rgba(202, 243, 239, 0.5)
+}
+
+.Leeks {
+	background-color: rgba(11, 45, 134, 0.5)
+}
+
+.Lettuce {
+	background-color: rgba(237, 215, 182, 0.5)
+}
+
+.Marigold {
+	background-color: rgba(90, 232, 255, 0.5)
+}
+
+.Melon {
+	background-color: rgba(27, 221, 198, 0.5)
+}
+
+.Nasturtium {
+	background-color: rgba(226, 245, 80, 0.5)
+}
+
+.Onion {
+	background-color: rgba(156, 180, 240, 0.5)
+}
+
+.Oregano {
+	background-color: rgba(90, 10, 121, 0.5)
+}
+
+.Parsley {
+	background-color: rgba(90, 26, 144, 0.5)
+}
+
+.Peas {
+	background-color: rgba(123, 212, 97, 0.5)
+}
+
+.Peppers {
+	background-color: rgba(96, 108, 51, 0.5)
+}
+
+.Rosemary {
+	background-color: rgba(82, 198, 16, 0.5)
+}
+
+.Sage {
+	background-color: rgba(125, 167, 244, 0.5)
+}
+
+.Spinach {
+	background-color: rgba(77, 115, 124, 0.5)
+}
+
+.Squash {
+	background-color: rgba(21, 161, 113, 0.5)
+}
+
+.Strawberry {
+	background-color: rgba(164, 124, 23, 0.5)
+}
+
+.Sunflower {
+	background-color: rgba(208, 104, 152, 0.5)
+}
+
+.Swiss-Chard {
+	background-color: rgba(139, 177, 2, 0.5)
+}
+
+.Thyme {
+	background-color: rgba(97, 30, 51, 0.5)
+}
+
+.Tomatoes {
+	background-color: rgba(128, 151, 84, 0.5)
 }
