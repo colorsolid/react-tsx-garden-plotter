@@ -187,7 +187,7 @@ Basil: {
   },
   Marigold: {
     Beans: -2,
-    Melon: -2,
+    Melon: 2,
     Sage: 1,
     Squash: 3,
     Thyme: 1,

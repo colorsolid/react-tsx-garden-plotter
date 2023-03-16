@@ -20,6 +20,9 @@ code {
 
 #toolbar {
     text-transform: capitalize;
+    padding-left: 10px;
+    background-color: #37393b;
+    color: white;
 }
 
 #outer-container {
@@ -111,7 +114,6 @@ code {
 .toolbar-info {
     margin-left: 5px;
     display: inline-block;
-    min-width: 200px;
 }
 
 .coordinates {
@@ -124,7 +126,7 @@ code {
 }
 
 .Beans {
-	background-color: rgba(30, 68, 136, 0.5)
+	background-color: rgba(70, 68, 136, 0.5)
 }
 
 .Broccoli {
@@ -156,7 +158,7 @@ code {
 }
 
 .Dill {
-	background-color: rgba(30, 222, 154, 0.5)
+	background-color: rgba(112, 234, 190, 0.5)
 }
 
 .Garlic {
@@ -172,7 +174,7 @@ code {
 }
 
 .Marigold {
-	background-color: rgba(90, 232, 255, 0.5)
+	background-color: rgba(15, 124, 145, 0.5)
 }
 
 .Melon {

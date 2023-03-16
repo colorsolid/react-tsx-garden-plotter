@@ -23,7 +23,9 @@ interface ToolBarProps {
     clearSquares: () => void,
     selectionStarted: boolean,
     cancelSelection: () => void,
-    isMobile: boolean
+    isMobile: boolean,
+    undo: () => void,
+    redo: () => void
 }
 
 export function Toolbar(
@@ -36,67 +38,81 @@ export function Toolbar(
         clearSquares,
         selectionStarted,
         cancelSelection,
-        isMobile
+        isMobile,
+        undo,
+        redo
     }: ToolBarProps) {
     return (
-        <div id={'toolbar'} >
-                        <Button variant={'danger'}
-                                size={'sm'}
-                                onClick={clearSquares}
-                        >
-                            clear
-                        </Button>
-                        {/*<div className={'toolbar-divider'}></div>*/}
-                        Garden space:&nbsp;
-                        {plantAreas.map((mode: string) =>
-                            <Button variant={mode === selectedMode ? 'primary' : 'outline-dark'}
-                                    size={'sm'}
-                                    key={`btn-${mode}`}
-                                    onClick={() => {
-                                        changeModeAndType(selectedType, mode);
-                                    }}
-                            >
-                                {mode.split('-')[0]}
-                            </Button>
-                        )}
-                        {/*<div className={'toolbar-divider'}></div>*/}
-                        <Button variant={selectedMode === 'plant' ? 'primary' : 'outline-dark'}
-                                size={'sm'}
-                                onClick={() => changeModeAndType((
-                                    document.querySelector('#plant-select') as HTMLInputElement)!.value, 'plant')}
-                        >
-                            plant&nbsp;
-                            <select
-                                id={'plant-select'}
-                                value={selectedType}
-                                onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-                                    changeModeAndType(event.target.value, 'plant')
-                                }}
-                            >
-                                {plantTypesKeys.map((type: string) =>
-                                    <option key={`option-${type}`}>
-                                        {type}
-                                    </option>
-                                )}
-                            </select>
-                        </Button>
-                        {isMobile && <Button
-                            size={'sm'}
-                            variant={selectedMode === 'inspect' ? 'primary' : 'outline-dark'}
-                            onClick={() => changeModeAndType(selectedType, 'inspect')}
-                        >
-                            inspect
-                        </Button>}
-                        {
-                            selectionStarted &&
-                            <Button variant={'dark'} size={'sm'} onClick={() => cancelSelection()}>cancel</Button>
-                        }
-                        {/*<div className={'toolbar-divider'}></div>*/}
-                        <span className={'toolbar-info'}>
+        <div id={'toolbar'}>
+            {/*<div className={'toolbar-divider'}></div>*/}
+            garden area:&nbsp;
+            {plantAreas.map((mode: string) =>
+                <Button variant={mode === selectedMode ? 'primary' : 'outline-light'}
+                        size={'sm'}
+                        key={`btn-${mode}`}
+                        onClick={() => {
+                            changeModeAndType(selectedType, mode);
+                        }}
+                >
+                    {mode.split('-')[0]}
+                </Button>
+            )}
+            <Button variant={'danger'}
+                    size={'sm'}
+                    onClick={clearSquares}
+            >
+                clear
+            </Button>
+            <Button variant={'dark'}
+                    size={'sm'}
+                    onClick={undo}
+            >
+                undo
+            </Button>
+            <Button variant={'dark'}
+                    size={'sm'}
+                    onClick={redo}
+            >
+                redo
+            </Button>
+            {isMobile && <Button
+                size={'sm'}
+                variant={selectedMode === 'inspect' ? 'primary' : 'outline-light'}
+                onClick={() => changeModeAndType(selectedType, 'inspect')}
+            >
+                inspect
+            </Button>}
+            {/*<div className={'toolbar-divider'}></div>*/}
+            <Button variant={selectedMode === 'plant' ? 'primary' : 'outline-light'}
+                    size={'sm'}
+                    onClick={() => changeModeAndType((
+                        document.querySelector('#plant-select') as HTMLInputElement)!.value, 'plant')}
+            >
+                plant&nbsp;
+                <select
+                    id={'plant-select'}
+                    value={selectedType}
+                    onChange={(event: ChangeEvent<HTMLSelectElement>) => {
+                        changeModeAndType(event.target.value, 'plant')
+                    }}
+                >
+                    {plantTypesKeys.map((type: string) =>
+                        <option key={`option-${type}`}>
+                            {type}
+                        </option>
+                    )}
+                </select>
+            </Button>
+            {
+                selectionStarted &&
+                <Button variant={'dark'} size={'sm'} onClick={() => cancelSelection()}>cancel</Button>
+            }
+            {/*<div className={'toolbar-divider'}></div>*/}
+            <span className={'toolbar-info'}>
                         <span
                             className={'coordinates'}>{hoverCoordinates ? '(' + hoverCoordinates.map(coordinate => coordinate + 1).reverse().join(', ') + ')' : ''}
                         </span>
-                            &nbsp;{hoverType !== 'nothing' ? hoverType : ''}
+                &nbsp;{hoverType !== 'nothing' ? hoverType : ''}
                         </span>
         </div>
     );

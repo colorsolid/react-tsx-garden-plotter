@@ -4,9 +4,7 @@ import {Toolbar} from './components/Toolbar';
 import {Grid} from './components/Grid';
 import {SquareObject, plantTypes} from './Global';
 
-import { isMobile } from 'detect-touch-device';
-
-console.log(isMobile)
+import {isMobile} from 'detect-touch-device';
 
 const WIDTH: number = 70;
 const HEIGHT: number = 70;
@@ -15,7 +13,8 @@ interface AppProps {
 }
 
 interface AppState {
-    grid?: SquareObject[][],
+    gridHistory?: SquareObject[][][],
+    currentGridIndex?: number,
     groups?: SquareObject[][],
     selectionStart?: number[] | null,
     selectedMode?: string,
@@ -23,6 +22,18 @@ interface AppState {
     groupIndex?: number,
     hoverCoordinates?: number[] | null,
     hoverType?: string
+}
+
+function copyHistory(gridHistory: SquareObject[][][], shorten = false): SquareObject[][][] {
+    let historyLength = gridHistory.length;
+    if (shorten && historyLength >= 10) {
+        historyLength = 9;
+    }
+    const gridHistoryCopy: SquareObject[][][] = [];
+    for (let i = 1; i <= historyLength; i++) {
+        gridHistoryCopy.splice(-i, 0, copyGrid(gridHistory[historyLength - i]))
+    }
+    return gridHistoryCopy;
 }
 
 function copyGrid(grid: SquareObject[][], removeHighlight: boolean = false): SquareObject[][] {
@@ -46,9 +57,10 @@ class App extends React.Component<AppProps, AppState> {
         this.state =
             // JSON.parse(window.localStorage.getItem('state') || 'null') ||
             {
-                grid: Array(WIDTH)
+                gridHistory: [Array(WIDTH)
                     .fill(Array(HEIGHT)
-                        .fill({type: 'nothing', state: ''})),
+                        .fill({type: 'nothing', state: ''}))],
+                currentGridIndex: 0,
                 selectionStart: null,
                 selectedMode: 'add-plant-area',
             }
@@ -63,18 +75,28 @@ class App extends React.Component<AppProps, AppState> {
     }
 
     handleClick(rowIndex: number, squareIndex: number) {
-        const gridCopy: SquareObject[][] = copyGrid(this.state.grid!, true);
+        const gridCopy: SquareObject[][] = copyGrid(this.state.gridHistory![this.state.currentGridIndex!], true);
         const square: SquareObject = gridCopy[rowIndex][squareIndex];
-        let gridHistory = this.state.grid!;
 
         if (this.state.selectedMode === 'inspect') {
+            // do nothing
 
+            // if this is the second click in a selection
         } else if (this.state.selectionStart) {
-            this.fillSquares(rowIndex, squareIndex, gridCopy);
-            this.drawCompatibility(gridCopy);
+            const currentGridIndex: number = this.state.currentGridIndex!;
+            if (this.state.gridHistory!.length > currentGridIndex + 1) {
+                this.setState({gridHistory: this.state.gridHistory!.slice(0, currentGridIndex)}, () => {
+                    this.fillSquares(rowIndex, squareIndex, gridCopy);
+                    this.drawCompatibility(gridCopy);
+                });
+            } else {
+                this.fillSquares(rowIndex, squareIndex, gridCopy);
+                this.drawCompatibility(gridCopy);
+            }
+            // first click to start a selection
         } else if (['add-plant-area', 'remove-plant-area'].includes(this.state.selectedMode!) || square.plantArea) {
             this.setState({
-                grid: gridCopy,
+                gridHistory: this.replaceGrid(this.state.currentGridIndex!, gridCopy),
                 selectionStart: [rowIndex, squareIndex]
             });
         }
@@ -82,16 +104,33 @@ class App extends React.Component<AppProps, AppState> {
 
     handleMouseOver(rowIndex: number, squareIndex: number) {
         if (this.state.selectionStart) {
-            const gridCopy: SquareObject[][] = copyGrid(this.state.grid!, true);
+            const gridCopy: SquareObject[][] = copyGrid(this.state.gridHistory![this.state.currentGridIndex!], true);
             this.fillSquares(rowIndex, squareIndex, gridCopy, true);
         }
         this.updateToolbarInfo(rowIndex, squareIndex);
     }
 
+    appendGridToHistory(gridCopy: SquareObject[][]): SquareObject[][][] {
+        const history = this.state.gridHistory!.concat([gridCopy]);
+        if (history.length > 10) {
+            const amount_over = history.length - 10;
+            history.splice(0, amount_over);
+        } else {
+            this.setState({currentGridIndex: history.length - 1});
+        }
+        return history;
+    }
+
+    replaceGrid(index: number, grid: SquareObject[][]) {
+        const gridHistoryCopy = this.state.gridHistory!.slice(0);
+        gridHistoryCopy[index] = grid;
+        return gridHistoryCopy;
+    }
+
     updateToolbarInfo(rowIndex: number, squareIndex: number) {
         this.setState({
             hoverCoordinates: [rowIndex, squareIndex],
-            hoverType: this.state.grid![rowIndex][squareIndex].type
+            hoverType: this.state.gridHistory![this.state.currentGridIndex!][rowIndex][squareIndex].type
         })
     }
 
@@ -151,15 +190,31 @@ class App extends React.Component<AppProps, AppState> {
         const selectionStart = this.state.selectionStart;
         if (highlight) {
             this.setState({
-                grid: gridCopy,
+                gridHistory: this.replaceGrid(this.state.currentGridIndex!, gridCopy),
             });
         } else {
             gridCopy[selectionStart![0]][selectionStart![1]].compatibility = null;
-            this.setState({
-                grid: gridCopy,
-                selectionStart: null,
+            gridCopy.map(row => {
+                row.map(square => square.highlight = false)
             });
+            this.setState({gridHistory: this.replaceGrid(this.state.currentGridIndex!, gridCopy)}, () => {
+                this.setState({
+                    gridHistory: this.appendGridToHistory(gridCopy),
+                    selectionStart: null,
+                });
+            })
         }
+    }
+
+    // append to grid history needs to clear successive entries after going back and replotting
+
+    historyBack() {
+        const currentIndex = this.state.currentGridIndex! - (this.state.currentGridIndex! > 0 ? 1 : 0);
+        this.setState({currentGridIndex: currentIndex});
+    }
+
+    historyForward() {
+
     }
 
     changeModeAndType(type: string, mode: string) {
@@ -173,7 +228,7 @@ class App extends React.Component<AppProps, AppState> {
 
     drawCompatibility(gridCopy: SquareObject[][] | null = null) {
         if (gridCopy === null) {
-            gridCopy = copyGrid(this.state.grid!);
+            gridCopy = copyGrid(this.state.gridHistory![this.state.currentGridIndex!]);
         }
 
         // loop through all squares in the grid and assign compatibility based on the offset squares types
@@ -232,7 +287,7 @@ class App extends React.Component<AppProps, AppState> {
             }
         }
 
-        this.setState({grid: gridCopy});
+        this.setState({gridHistory: this.appendGridToHistory(gridCopy)});
     }
 
     clearSquares() {
@@ -240,18 +295,11 @@ class App extends React.Component<AppProps, AppState> {
         if (!confirmation) {
             return;
         }
-        const grid: SquareObject[][] = this.state.grid!
-            .map(row => row.map((square: SquareObject) => {
-                    return {
-                        type: 'nothing',
-                        compatibility: null,
-                        highlight: false,
-                        plantArea: false
-                    };
-                })
-            );
+        const grid: SquareObject[][] = Array(WIDTH)
+            .fill(Array(HEIGHT)
+                .fill({type: 'nothing', state: ''}));
         this.setState({
-            grid: grid,
+            gridHistory: this.appendGridToHistory(grid),
             selectionStart: null,
             selectedMode: 'add-plant-area'
         });
@@ -277,7 +325,6 @@ class App extends React.Component<AppProps, AppState> {
         };
     }
 
-
     render() {
         return (
             <React.Fragment>
@@ -291,9 +338,11 @@ class App extends React.Component<AppProps, AppState> {
                     selectionStarted={!!this.state.selectionStart}
                     cancelSelection={this.cancelSelection.bind(this)}
                     isMobile={isMobile}
+                    undo={this.historyBack.bind(this)}
+                    redo={this.historyForward.bind(this)}
                 />
                 <Grid
-                    grid={this.state.grid!}
+                    grid={this.state.gridHistory![this.state.currentGridIndex!]}
                     onClick={this.handleClick.bind(this)}
                     onMouseOver={this.handleMouseOver.bind(this)}
                 />
