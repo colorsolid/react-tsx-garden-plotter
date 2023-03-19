@@ -77,15 +77,21 @@ code {
     width: max-content;
 }
 
+:root {
+    --square-border-color: rgba(61, 46, 27, 0.5);
+}
+
 .square {
     background-color: white;
     display: table-cell;
     width: 32px;
     height: 32px;
-    border: solid 1px rgba(37, 37, 37, 0.5);
+    /*border: solid 1px rgba(8, 81, 93, 0.5);*/
+    border-left: solid 1px var(--square-border-color);
+    border-top: solid 1px var(--square-border-color);
     text-align: center;
     line-height: 30px;
-    color: #656565;
+    color: #4f4f4f;
     -webkit-user-select: none; /* Safari */
     -ms-user-select: none; /* IE 10 and IE 11 */
     user-select: none; /* Standard syntax */
@@ -100,19 +106,19 @@ code {
 }
 
 .bt {
-    border-top-color: black;
+    border-top: black solid 1px;
 }
 
 .bl {
-    border-left-color: black;
+    border-left: black solid 1px;
 }
 
 .bb {
-    border-bottom-color: black;
+    border-bottom: black solid 1px;
 }
 
 .br {
-    border-right-color: black;
+    border-right: black solid 1px;
 }
 
 @media (pointer: fine) {

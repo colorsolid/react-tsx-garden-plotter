@@ -74,7 +74,6 @@ class App extends React.Component<AppProps, AppState> {
         } else if (this.state.selectionStart) {
             const currentGridIndex: number = this.state.currentGridIndex!;
             if (this.state.gridHistory!.length > currentGridIndex + 1) {
-                console.log(this.state.gridHistory!.slice(0, currentGridIndex))
                 this.setState({gridHistory: this.state.gridHistory!.slice(0, currentGridIndex + 1)}, () => {
                     this.fillSquares(rowIndex, squareIndex, gridCopy);
                 });
@@ -334,7 +333,6 @@ class App extends React.Component<AppProps, AppState> {
     }
 
     _export() {
-        console.log('export')
         const jsonString = JSON.stringify(this.state);
         const button = document.createElement('a');
         button.setAttribute('href', 'data:text/plan;charset=utf-8,' + encodeURIComponent(jsonString))
@@ -367,7 +365,6 @@ class App extends React.Component<AppProps, AppState> {
         const fileInput = document.getElementById('file-upload')!;
 
         fileInput.onchange = () => {
-            console.log('input')
             const reader = new FileReader()
             reader.onload = (event) => {this.loadFileData(event)};
             reader.readAsText((fileInput as HTMLInputElement).files![0])
