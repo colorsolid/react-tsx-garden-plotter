@@ -1,8 +1,5 @@
 import React, {ChangeEvent} from 'react';
 import Button from 'react-bootstrap/Button';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
-import Container from 'react-bootstrap/Container';
 
 import {plantTypes} from '../Global';
 
@@ -24,8 +21,10 @@ interface ToolBarProps {
     selectionStarted: boolean,
     cancelSelection: () => void,
     isMobile: boolean,
-    undo: () => void,
-    redo: () => void
+    undo: { call: () => void, enabled: boolean },
+    redo: { call: () => void, enabled: boolean }
+    _import: { call: () => void, enabled: boolean },
+    _export: { call: () => void, enabled: boolean },
 }
 
 export function Toolbar(
@@ -40,7 +39,9 @@ export function Toolbar(
         cancelSelection,
         isMobile,
         undo,
-        redo
+        redo,
+        _import,
+        _export
     }: ToolBarProps) {
     return (
         <div id={'toolbar'}>
@@ -65,13 +66,15 @@ export function Toolbar(
             </Button>
             <Button variant={'dark'}
                     size={'sm'}
-                    onClick={undo}
+                    onClick={undo.call}
+                    disabled={!undo.enabled}
             >
                 undo
             </Button>
             <Button variant={'dark'}
                     size={'sm'}
-                    onClick={redo}
+                    onClick={redo.call}
+                    disabled={!redo.enabled}
             >
                 redo
             </Button>
@@ -108,12 +111,17 @@ export function Toolbar(
                 <Button variant={'dark'} size={'sm'} onClick={() => cancelSelection()}>cancel</Button>
             }
             {/*<div className={'toolbar-divider'}></div>*/}
+            <input id="file-upload" type="file" accept=".json"></input>
+            <label htmlFor="file-upload" className="btn-block">
+                <span className="btn btn-sm btn-outline-warning">import</span>
+            </label>
+            <Button size={'sm'} variant={'outline-warning'} onClick={_export.call}>Export</Button>
             <span className={'toolbar-info'}>
                         <span
                             className={'coordinates'}>{hoverCoordinates ? '(' + hoverCoordinates.map(coordinate => coordinate + 1).reverse().join(', ') + ')' : ''}
                         </span>
                 &nbsp;{hoverType !== 'nothing' ? hoverType : ''}
-                        </span>
+            </span>
         </div>
     );
 }

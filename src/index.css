@@ -14,7 +14,7 @@ code {
 }
 
 #root {
-    background-color: #ccc;
+    background-color: #9b9292;
     width: 100%;
 }
 
@@ -23,6 +23,40 @@ code {
     padding-left: 10px;
     background-color: #37393b;
     color: white;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+}
+
+.toolbar-info {
+    margin-left: 5px;
+    display: inline-block;
+}
+
+.coordinates {
+    display: inline-block;
+    min-width: 60px;
+}
+
+.btn {
+    margin: 5px;
+    text-transform: capitalize;
+}
+
+.toolbar-divider {
+    display: inline-block;
+    border-right: solid 1px black;
+    padding-right: 10px;
+    margin-right: 10px;
+    height: 24px;
+    vertical-align: middle;
+}
+
+#file-upload {
+    opacity: 0;
+    display: block;
+    position: absolute;
+    z-index: -1;
 }
 
 #outer-container {
@@ -48,14 +82,37 @@ code {
     display: table-cell;
     width: 32px;
     height: 32px;
-    border: solid 1px rgba(80, 50, 20, 0.5);
+    border: solid 1px rgba(37, 37, 37, 0.5);
     text-align: center;
     line-height: 30px;
-    color: black;
+    color: #656565;
     -webkit-user-select: none; /* Safari */
     -ms-user-select: none; /* IE 10 and IE 11 */
     user-select: none; /* Standard syntax */
     font-weight: bold;
+    /*box-shadow: inset 10px 1px 1px 1px #ffffff;*/
+    box-shadow: inset 1px 1px 12px 1px rgba(35, 35, 35, 0.12);
+    text-shadow:
+            -1px 0 2px rgba(0, 0, 0, 1),
+             0 1px 2px rgba(0, 0, 0, 1),
+             1px 0 2px rgba(0, 0, 0, 1),
+            0 -1px 2px rgba(0, 0, 0, 1);
+}
+
+.bt {
+    border-top-color: black;
+}
+
+.bl {
+    border-left-color: black;
+}
+
+.bb {
+    border-bottom-color: black;
+}
+
+.br {
+    border-right-color: black;
 }
 
 @media (pointer: fine) {
@@ -64,179 +121,139 @@ code {
     }
 }
 
-.nothing {
-    background-color: #131212;
-    color: white;
-}
-
-.plant-area {
-    background-color: #705342;
-}
-
 .selection-start {
     border: solid 1px #ffffff;
-}
-
-.selected {
-    background-color: #61dafb;
-}
-
-.btn {
-    margin: 5px;
-    text-transform:capitalize;
-}
-
-.hover {
-    border: solid 1px red;
-}
-
-.toolbar-divider {
-    display: inline-block;
-    border-right: solid 1px black;
-    padding-right: 10px;
-    margin-right: 10px;
-    height: 24px;
-    vertical-align: middle;
 }
 
 .highlight {
     border: solid #ffffff 1px !important;
 }
 
-.highlight-bad {
-    border: solid red 1px !important;
+.nothing {
+    background-color: #000000;
+    color: #ccc6c6;
 }
 
-.highlight-good {
-    border: solid #7ffc7f 1px !important;
-}
-
-.toolbar-info {
-    margin-left: 5px;
-    display: inline-block;
-}
-
-.coordinates {
-    display: inline-block;
-    min-width: 60px;
+.plant-area {
+    background-color: #705342;
 }
 
 .Basil {
-	background-color: rgba(169, 56, 61, 0.5)
+    background-color: rgba(169, 56, 61, 0.5)
 }
 
 .Beans {
-	background-color: rgba(70, 68, 136, 0.5)
+    background-color: rgba(70, 68, 136, 0.5)
 }
 
 .Broccoli {
-	background-color: rgba(75, 122, 233, 0.5)
+    background-color: rgba(75, 122, 233, 0.5)
 }
 
 .Carrots {
-	background-color: rgba(75, 103, 127, 0.5)
+    background-color: rgba(75, 103, 127, 0.5)
 }
 
 .Cauliflower {
-	background-color: rgba(30, 31, 249, 0.5)
+    background-color: rgba(30, 31, 249, 0.5)
 }
 
 .Chives {
-	background-color: rgba(26, 129, 61, 0.5)
+    background-color: rgba(26, 129, 61, 0.5)
 }
 
 .Cilantro {
-	background-color: rgba(56, 106, 110, 0.5)
+    background-color: rgba(63, 200, 210, 0.5)
 }
 
 .Corn {
-	background-color: rgba(136, 5, 5, 0.5)
+    background-color: rgba(136, 5, 5, 0.5)
 }
 
 .Cucumbers {
-	background-color: rgba(201, 138, 133, 0.5)
+    background-color: rgba(201, 138, 133, 0.5)
 }
 
 .Dill {
-	background-color: rgba(112, 234, 190, 0.5)
+    background-color: rgba(144, 217, 192, 0.5)
 }
 
 .Garlic {
-	background-color: rgba(202, 243, 239, 0.5)
+    background-color: rgba(202, 243, 239, 0.5)
 }
 
 .Leeks {
-	background-color: rgba(11, 45, 134, 0.5)
+    background-color: rgba(11, 45, 134, 0.5)
 }
 
 .Lettuce {
-	background-color: rgba(237, 215, 182, 0.5)
+    background-color: rgba(237, 215, 182, 0.5)
 }
 
 .Marigold {
-	background-color: rgba(15, 124, 145, 0.5)
+    background-color: rgba(15, 124, 145, 0.5)
 }
 
 .Melon {
-	background-color: rgba(27, 221, 198, 0.5)
+    background-color: rgba(27, 221, 198, 0.5)
 }
 
 .Nasturtium {
-	background-color: rgba(226, 245, 80, 0.5)
+    background-color: rgba(226, 245, 80, 0.5)
 }
 
 .Onion {
-	background-color: rgba(156, 180, 240, 0.5)
+    background-color: rgba(156, 180, 240, 0.5)
 }
 
 .Oregano {
-	background-color: rgba(90, 10, 121, 0.5)
+    background-color: rgba(90, 10, 121, 0.5)
 }
 
 .Parsley {
-	background-color: rgba(90, 26, 144, 0.5)
+    background-color: rgba(165, 60, 255, 0.5)
 }
 
 .Peas {
-	background-color: rgba(123, 212, 97, 0.5)
+    background-color: rgba(97, 236, 57, 0.5)
 }
 
 .Peppers {
-	background-color: rgba(96, 108, 51, 0.5)
+    background-color: rgba(96, 108, 51, 0.5)
 }
 
 .Rosemary {
-	background-color: rgba(82, 198, 16, 0.5)
+    background-color: rgba(37, 91, 8, 0.5)
 }
 
 .Sage {
-	background-color: rgba(125, 167, 244, 0.5)
+    background-color: rgba(125, 167, 244, 0.5)
 }
 
 .Spinach {
-	background-color: rgba(77, 115, 124, 0.5)
+    background-color: rgba(134, 189, 201, 0.5)
 }
 
 .Squash {
-	background-color: rgba(21, 161, 113, 0.5)
+    background-color: rgba(21, 161, 113, 0.5)
 }
 
 .Strawberry {
-	background-color: rgba(164, 124, 23, 0.5)
+    background-color: rgba(164, 124, 23, 0.5)
 }
 
 .Sunflower {
-	background-color: rgba(208, 104, 152, 0.5)
+    background-color: rgba(208, 104, 152, 0.5)
 }
 
 .Swiss-Chard {
-	background-color: rgba(139, 177, 2, 0.5)
+    background-color: rgba(139, 177, 2, 0.5)
 }
 
 .Thyme {
-	background-color: rgba(97, 30, 51, 0.5)
+    background-color: rgba(97, 30, 51, 0.5)
 }
 
 .Tomatoes {
-	background-color: rgba(128, 151, 84, 0.5)
+    background-color: rgba(128, 151, 84, 0.5)
 }

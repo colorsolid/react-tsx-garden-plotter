@@ -10,7 +10,7 @@ interface GridProps {
 
 export function Grid({grid, onClick, onMouseOver}:GridProps) {
     return (
-        <div id={'outer-container'} onLoad={() => console.log('test')}>
+        <div id={'outer-container'}>
             <div id={'inner-container'}>
                 {grid.map((row: SquareObject[], rowIndex: number) =>
                     <div key={'row_' + rowIndex.toString()} className={'row-custom'}>

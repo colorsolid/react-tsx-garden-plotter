@@ -17,7 +17,8 @@ export function Square({onClick, onMouseOver, rowIndex, squareIndex, square}: Sq
                 `square 
                 ${square.type.replace(' ', '-')} 
                 ${square.highlight ? 'highlight' : ''} 
-                ${square.plantArea ? 'plant-area' : ''}`
+                ${square.plantArea ? 'plant-area' : ''}
+                ${square.hasOwnProperty('border') ? square.border.join(' ') : []}`
             }
             onClick={() => {
                 onClick(rowIndex, squareIndex);
