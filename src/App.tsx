@@ -296,7 +296,7 @@ class App extends React.Component<AppProps, AppState> {
                                 //     square.compatibility = 0;
                                 // }
                             }
-                            if (this.state.selectedType !== 'nothing'
+                            if ((this.state.selectedType !== 'nothing' || square.type !== 'nothing')
                                 && square.compatibility === null
                                 && offsetSquare.type !== 'nothing'
                                 && offsetSquare.type !== square.type) {
