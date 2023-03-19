@@ -407,7 +407,7 @@ export const plantTypes: any = {
         Cauliflower: -2,
         Chives: 2,
         Corn: -2,
-        Cucumber: 2,
+        Cucumbers: 2,
         Dill: -2,
         Garlic: 2,
         Lettuce: 2,
