@@ -26,7 +26,6 @@ interface ToolBarProps {
     isMobile: boolean,
     undo: { call: () => void, enabled: boolean },
     redo: { call: () => void, enabled: boolean }
-    _import: { call: () => void, enabled: boolean },
     _export: { call: () => void, enabled: boolean },
 }
 
@@ -43,7 +42,6 @@ export function Toolbar(
         isMobile,
         undo,
         redo,
-        _import,
         _export
     }: ToolBarProps) {
 
@@ -172,19 +170,19 @@ export function Toolbar(
             >
                 inspect
             </Button>}
+            <div className={'toolbar-info'}>
+                <div
+                    className={'coordinates'}>{
+                    hoverCoordinates ? '(' + hoverCoordinates
+                        .map(coordinate => coordinate + 1).reverse().join(', ') + ')' : ''
+                }
+                </div>
+                <div>{hoverType !== 'nothing' ? hoverType : '_'}</div>
+            </div>
             {
                 selectionStarted &&
                 <Button variant={'dark'} size={'sm'} onClick={() => cancelSelection()}>cancel</Button>
             }
-            <span className={'toolbar-info'}>
-                        <span
-                            className={'coordinates'}>{
-                            hoverCoordinates ? '(' + hoverCoordinates
-                                .map(coordinate => coordinate + 1).reverse().join(', ') + ')' : ''
-                        }
-                        </span>
-                &nbsp;{hoverType !== 'nothing' ? hoverType : ''}
-            </span>
         </div>
     );
 }

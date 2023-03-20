@@ -6,19 +6,6 @@ import {SquareObject, plantTypes} from './Global';
 
 import {isMobile} from 'detect-touch-device';
 
-
-// setting for units and garden size
-// measuring tool
-// improve performance, update only changed and surrounding squares
-// show label and coordinates next to cursor
-
-// ? combine selected and hover states into objects
-// ? cancel button and info next to first square in selection
-// ? long press for mobile
-// ? move translation
-// ? group labels
-// ? custom colors
-
 const WIDTH: number = 70;
 const HEIGHT: number = 70;
 
@@ -81,10 +68,9 @@ class App extends React.Component<AppProps, AppState> {
         const square: SquareObject = gridCopy[rowIndex][squareIndex];
 
         if (this.state.selectedMode === 'inspect') {
-            // do nothing
-
-            // if this is the second click in a selection
+            // do nothing, only for selecting a square and displaying data
         } else if (this.state.selectionStart) {
+            // if this is the second click in a selection
             const currentGridIndex: number = this.state.currentGridIndex!;
             if (this.state.gridHistory!.length > currentGridIndex + 1) {
                 this.setState({gridHistory: this.state.gridHistory!.slice(0, currentGridIndex + 1)}, () => {
@@ -93,10 +79,9 @@ class App extends React.Component<AppProps, AppState> {
             } else {
                 this.fillSquares(rowIndex, squareIndex, gridCopy);
             }
-            // first click to start a selection
         } else if (['add-plant-area', 'remove-plant-area'].includes(this.state.selectedMode!) || square.plantArea) {
+            // first click to start a selection
             this.setState({
-                // gridHistory: this.replaceGrid(this.state.currentGridIndex!, gridCopy),
                 selectionStart: [rowIndex, squareIndex]
             });
         }
@@ -160,12 +145,11 @@ class App extends React.Component<AppProps, AppState> {
     }
 
     replaceGrid(
-        index: number,
         grid: SquareObject[][],
         gridHistory: SquareObject[][][] = this.state.gridHistory!
     ): SquareObject[][][] {
         const gridHistoryCopy = gridHistory.slice(0);
-        gridHistoryCopy[index] = grid;
+        gridHistoryCopy[this.state.currentGridIndex!] = grid;
         return gridHistoryCopy;
     }
 
@@ -221,13 +205,12 @@ class App extends React.Component<AppProps, AppState> {
         }
 
         if (highlight) {
+            // update current grid only
             this.setState({
-                gridHistory: this.replaceGrid(this.state.currentGridIndex!, gridCopy),
+                gridHistory: this.replaceGrid(gridCopy),
             });
         } else {
-
-            // const gridHistory = this.replaceGrid(this.state.currentGridIndex!, gridCopy);
-
+            // commit current grid to history
             this.setState({
                 gridHistory: this.appendGridToHistory(gridCopy),
                 selectionStart: null,
@@ -279,6 +262,7 @@ class App extends React.Component<AppProps, AppState> {
                                 }
                             }
 
+                            // thick borders for adjacent squares of a different type
                             if (offsetSquare.type !== square.type) {
                                 if (rowOffset === -1 && squareOffset === 0) {
                                     square.border.push('bt');
@@ -297,16 +281,16 @@ class App extends React.Component<AppProps, AppState> {
                                 // if offset square has a compatibility entry for the selected type
                                 if (squareCompatibilityList.hasOwnProperty(this.state.selectedType!)) {
                                     const compatibility = squareCompatibilityList[this.state.selectedType!];
-                                    if (square.compatibility === null || square.compatibility === 0 || compatibility < 0) {
+                                    // if square's current compatibility is unset, neutral, or higher
+                                    if (square.compatibility === null
+                                        || square.compatibility === 0
+                                        || compatibility < square.compatibility) {
                                         square.compatibility = compatibility;
                                     }
                                 }
-                                // else if (this.state.selectedType !== 'nothing'
-                                //     && square.compatibility === null
-                                //     && offsetSquare.type !== 'nothing') {
-                                //     square.compatibility = 0;
-                                // }
                             }
+
+                            // neutral compatibility
                             if ((this.state.selectedType !== 'nothing' || square.type !== 'nothing')
                                 && square.compatibility === null
                                 && offsetSquare.type !== 'nothing'
@@ -319,7 +303,7 @@ class App extends React.Component<AppProps, AppState> {
             }
         }
 
-        gridHistory = this.replaceGrid(this.state.currentGridIndex!, gridCopy, gridHistory);
+        gridHistory = this.replaceGrid(gridCopy, gridHistory);
         this.setState({gridHistory: gridHistory});
     }
 
@@ -336,11 +320,6 @@ class App extends React.Component<AppProps, AppState> {
             selectionStart: null,
             selectedMode: 'add-plant-area'
         });
-    }
-
-    _import() {
-        //const fileData = JSON.parse(event.target.result);
-
     }
 
     _export() {
@@ -375,13 +354,19 @@ class App extends React.Component<AppProps, AppState> {
         const toolbar = document.getElementById('toolbar');
         const container = document.getElementById('outer-container');
 
+        // adjust main grid height to fill all screen space
         const fixHeight = () => {
             container!.style.height = `${window.innerHeight - toolbar!.offsetHeight}px`;
         }
 
-        const fileInput = document.getElementById('file-upload')!;
+        fixHeight();
 
-        console.log(fileInput)
+        window.onresize = event => {
+            fixHeight();
+        };
+
+        // input element for file import feature
+        const fileInput = document.getElementById('file-upload')!;
 
         fileInput.onchange = () => {
             const reader = new FileReader()
@@ -390,12 +375,6 @@ class App extends React.Component<AppProps, AppState> {
             };
             reader.readAsText((fileInput as HTMLInputElement).files![0])
         }
-
-        fixHeight();
-
-        window.onresize = event => {
-            fixHeight();
-        };
     }
 
     render() {
@@ -416,7 +395,6 @@ class App extends React.Component<AppProps, AppState> {
                         call: this.historyForward.bind(this),
                         enabled: this.state.currentGridIndex! < this.state.gridHistory!.length - 1
                     }}
-                    _import={{call: this._import.bind(this), enabled: true}}
                     _export={{call: this._export.bind(this), enabled: this.state.currentGridIndex! > 0}}
                 />
                 <Grid
