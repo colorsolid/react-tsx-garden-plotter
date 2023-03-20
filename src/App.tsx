@@ -48,7 +48,7 @@ class App extends React.Component<AppProps, AppState> {
                 gridHistory: [
                     Array(WIDTH)
                         .fill(Array(HEIGHT)
-                            .fill({type: 'nothing', border: []}))],
+                            .fill({type: 'nothing'}))],
                 currentGridIndex: 0,
                 selectionStart: null,
                 selectedMode: 'add-plant-area',
@@ -322,21 +322,19 @@ class App extends React.Component<AppProps, AppState> {
         });
     }
 
-    _export() {
+    exportData(fileName: string | null = null) {
         const jsonString = JSON.stringify(this.state);
-        const button = document.createElement('a');
-        const fileName = window.prompt('Save file as', 'plotter-data');
+        const downloadLink = document.createElement('a');
         if (fileName !== null) {
             if (fileName.length === 0) {
-                alert('File name is invalid');
-                return;
+                fileName = 'plotter-data.json'
             }
-            button.setAttribute('href', 'data:text/plan;charset=utf-8,' + encodeURIComponent(jsonString))
-            button.setAttribute('download', fileName + '.json')
-            button.style.display = 'none';
-            document.body.appendChild(button);
-            button.click();
-            document.body.removeChild(button);
+            downloadLink.setAttribute('href', 'data:text/plan;charset=utf-8,' + encodeURIComponent(jsonString))
+            downloadLink.setAttribute('download', fileName + '.json')
+            downloadLink.style.display = 'none';
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
         }
     }
 
@@ -395,7 +393,7 @@ class App extends React.Component<AppProps, AppState> {
                         call: this.historyForward.bind(this),
                         enabled: this.state.currentGridIndex! < this.state.gridHistory!.length - 1
                     }}
-                    _export={{call: this._export.bind(this), enabled: this.state.currentGridIndex! > 0}}
+                    exportData={this.exportData.bind(this)}
                 />
                 <Grid
                     grid={this.state.gridHistory![this.state.currentGridIndex!]}

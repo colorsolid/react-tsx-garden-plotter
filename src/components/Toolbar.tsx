@@ -1,10 +1,11 @@
-import React, {ChangeEvent} from 'react';
+import React, {ChangeEvent, useState} from "react";
 import Button from 'react-bootstrap/Button';
 
 import {plantTypes} from '../Global';
-import {Dropdown, Tooltip} from "react-bootstrap";
+import {Dropdown, Form, InputGroup, Tooltip} from "react-bootstrap";
 import {OverlayTrigger} from "react-bootstrap";
 import {ReactComponent} from "*.svg";
+import {Modal} from "react-bootstrap";
 
 const plantTypesKeys = Object.keys(plantTypes).sort();
 plantTypesKeys.splice(0, 0, plantTypesKeys.splice(plantTypesKeys.indexOf('nothing'))[0]);
@@ -26,7 +27,7 @@ interface ToolBarProps {
     isMobile: boolean,
     undo: { call: () => void, enabled: boolean },
     redo: { call: () => void, enabled: boolean }
-    _export: { call: () => void, enabled: boolean },
+    exportData: (fileName?: string) => void,
 }
 
 export function Toolbar(
@@ -42,8 +43,15 @@ export function Toolbar(
         isMobile,
         undo,
         redo,
-        _export
+        exportData
     }: ToolBarProps) {
+
+    const [showExport, setShowExport] = useState(false);
+
+    const handleExportClose = () => setShowExport(false);
+    const handleExportOpen = () => setShowExport(true);
+
+    const [exportFileName, setExportFileName] = useState('plotter-data');
 
     const optionsDropdown = () => {
         return (
@@ -59,10 +67,44 @@ export function Toolbar(
                         <div onClick={() => document.getElementById('file-upload')!.click()}>import</div>
                     </Dropdown.Item>
                     <Dropdown.Item>
-                        <div onClick={_export.call}>export</div>
+                        <div onClick={handleExportOpen}>export</div>
                     </Dropdown.Item>
                 </Dropdown.Menu>
             </Dropdown>
+        );
+    }
+
+    const exportModal = () => {
+        return (
+            <Modal className={'dark-modal'} show={showExport} onHide={handleExportClose}>
+                <Modal.Header className={'dark-modal'} closeButton>
+                    <Modal.Title>Export data to a file</Modal.Title>
+                </Modal.Header>
+                <Modal.Body className={'dark-modal'}>
+                    Enter a filename:
+                    <InputGroup className="mb-1 mt-1">
+                        <Form.Control
+                            required
+                            placeholder="plotter-data"
+                            aria-label="plotter-data"
+                            aria-describedby="export-file-name-input"
+                            onChange={e => setExportFileName(e.target.value)}
+                        />
+                        <InputGroup.Text id="export-file-name-input">.json</InputGroup.Text>
+                    </InputGroup>
+                </Modal.Body>
+                <Modal.Footer className={'dark-modal'}>
+                    <Button variant="outline-light" onClick={handleExportClose}>
+                        Cancel
+                    </Button>
+                    <Button variant="dark" onClick={() => {
+                        exportData(exportFileName + '.json');
+                        handleExportClose();
+                    }}>
+                        Save File
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         );
     }
 
@@ -183,6 +225,7 @@ export function Toolbar(
                 selectionStarted &&
                 <Button variant={'dark'} size={'sm'} onClick={() => cancelSelection()}>cancel</Button>
             }
+            {exportModal()}
         </div>
     );
 }

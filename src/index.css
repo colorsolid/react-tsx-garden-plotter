@@ -6,6 +6,7 @@ html, body {
     sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    --bs-modal-bg: black !important;
 }
 
 code {
@@ -49,13 +50,13 @@ code {
     text-transform: capitalize;
 }
 
-.toolbar-divider {
-    display: inline-block;
-    border-right: solid 1px black;
-    padding-right: 10px;
-    margin-right: 10px;
-    height: 24px;
-    vertical-align: middle;
+.dark-modal .modal-content {
+    background-color: #415c65;
+    color: white;
+}
+
+.btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
 }
 
 #file-upload {
@@ -84,7 +85,7 @@ code {
 }
 
 :root {
-    --square-border-color: rgba(82, 65, 53, 0.8);
+    --square-border-color: rgba(66, 56, 49, 0.8);
 }
 
 .square {
