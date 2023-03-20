@@ -263,7 +263,7 @@ class App extends React.Component<AppProps, AppState> {
                             }
 
                             // thick borders for adjacent squares of a different type
-                            if (offsetSquare.type !== square.type) {
+                            if (offsetSquare.type !== square.type && offsetSquare.plantArea) {
                                 if (rowOffset === -1 && squareOffset === 0) {
                                     square.border.push('bt');
                                 } else if (rowOffset === 1 && squareOffset === 0) {
