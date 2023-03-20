@@ -4,6 +4,7 @@ import Button from 'react-bootstrap/Button';
 import {plantTypes} from '../Global';
 import {Dropdown, Tooltip} from "react-bootstrap";
 import {OverlayTrigger} from "react-bootstrap";
+import {ReactComponent} from "*.svg";
 
 const plantTypesKeys = Object.keys(plantTypes).sort();
 plantTypesKeys.splice(0, 0, plantTypesKeys.splice(plantTypesKeys.indexOf('nothing'))[0]);
@@ -45,12 +46,9 @@ export function Toolbar(
         _import,
         _export
     }: ToolBarProps) {
-    return (
-        <div id={'toolbar'}>
-            <input id="file-upload" type="file" accept=".json"></input>
-            <label htmlFor="file-upload" className="d-none">
-                <span>import</span>
-            </label>
+
+    const optionsDropdown = () => {
+        return (
             <Dropdown>
                 <Dropdown.Toggle variant={'dark'} size={'sm'} id={'toolbar-dropdown'}>
                 </Dropdown.Toggle>
@@ -67,32 +65,47 @@ export function Toolbar(
                     </Dropdown.Item>
                 </Dropdown.Menu>
             </Dropdown>
+        );
+    }
 
-            <OverlayTrigger placement={'bottom'} overlay={<Tooltip>undo</Tooltip>}>
-                <Button variant={'dark'}
-                        size={'sm'}
-                        onClick={undo.call}
-                        disabled={!undo.enabled}
-                >
-                    ↶
-                </Button>
-            </OverlayTrigger>
-            <OverlayTrigger placement={'bottom'} overlay={<Tooltip>redo</Tooltip>}>
-                <Button variant={'dark'}
-                        size={'sm'}
-                        onClick={redo.call}
-                        disabled={!redo.enabled}
-                >
-                    ↷
-                </Button>
-            </OverlayTrigger>
-            {/*<div className={'toolbar-divider'}></div>*/}
+    const undoAndRedo = () => {
+        return (
+            <React.Fragment>
+                <OverlayTrigger placement={'bottom'} overlay={<Tooltip>Undo</Tooltip>}>
+                    <Button variant={'dark'}
+                            size={'sm'}
+                            onClick={undo.call}
+                            disabled={!undo.enabled}
+                    >
+                        ↶
+                    </Button>
+                </OverlayTrigger>
+                <OverlayTrigger placement={'bottom'} overlay={<Tooltip>Redo</Tooltip>}>
+                    <Button variant={'dark'}
+                            size={'sm'}
+                            onClick={redo.call}
+                            disabled={!redo.enabled}
+                    >
+                        ↷
+                    </Button>
+                </OverlayTrigger>
+            </React.Fragment>
+        );
+    }
+
+    const gardenToolSelector = () => {
+        const plantAreaToolSelected = ['add-plant-area', 'remove-plant-area'].includes(selectedMode);
+
+        return (
             <Button
-                variant={['add-plant-area', 'remove-plant-area'].includes(selectedMode) ? 'dark' : 'outline-dark'}
+                variant={plantAreaToolSelected ? 'dark' : 'outline-dark'}
                 size={'sm'}
-                onClick={() => changeModeAndType((document.getElementById('garden-mode-select') as HTMLSelectElement)!.value, selectedType)}
+                onClick={() => changeModeAndType(
+                    (document.getElementById('garden-mode-select') as HTMLSelectElement)!.value, selectedType
+                )}
+                className={'fw-bold'}
             >
-                garden area:&nbsp;
+                garden area&nbsp;
                 <select
                     id={'garden-mode-select'}
                     value={selectedMode}
@@ -109,11 +122,16 @@ export function Toolbar(
                     </option>
                 </select>
             </Button>
-            {/*<div className={'toolbar-divider'}></div>*/}
+        );
+    }
+
+    const plantToolSelector = () => {
+        return (
             <Button variant={selectedMode === 'plant' ? 'dark' : 'outline-dark'}
                     size={'sm'}
                     onClick={() => changeModeAndType('plant', (
                         document.querySelector('#plant-select') as HTMLInputElement)!.value)}
+                    className={'fw-bold'}
             >
                 plant&nbsp;
                 <select
@@ -124,15 +142,32 @@ export function Toolbar(
                     }}
                 >
                     {plantTypesKeys.map((type: string) =>
-                        <option key={`option-${type}`}>
-                            {type}
+                        <option value={type} key={`option-${type}`}>
+                            {(type === 'nothing' ? '-- ' : '') + type.charAt(0).toUpperCase() + type.slice(1)
+                            + (type === 'nothing' ? ' --' : '')}
+
                         </option>
                     )}
                 </select>
             </Button>
+        );
+    }
+
+    return (
+        <div id={'toolbar'}>
+            <input id="file-upload" type="file" accept=".json"></input>
+            <label htmlFor="file-upload" className="d-none">
+                <span>import</span>
+            </label>
+
+            {optionsDropdown()}
+            {undoAndRedo()}
+            {gardenToolSelector()}
+            {plantToolSelector()}
+
             {isMobile && <Button
                 size={'sm'}
-                variant={selectedMode === 'inspect' ? 'primary' : 'outline-dark'}
+                variant={selectedMode === 'inspect' ? 'dark' : 'outline-dark'}
                 onClick={() => changeModeAndType('inspect', selectedType)}
             >
                 inspect
@@ -141,10 +176,12 @@ export function Toolbar(
                 selectionStarted &&
                 <Button variant={'dark'} size={'sm'} onClick={() => cancelSelection()}>cancel</Button>
             }
-            {/*<div className={'toolbar-divider'}></div>*/}
             <span className={'toolbar-info'}>
                         <span
-                            className={'coordinates'}>{hoverCoordinates ? '(' + hoverCoordinates.map(coordinate => coordinate + 1).reverse().join(', ') + ')' : ''}
+                            className={'coordinates'}>{
+                            hoverCoordinates ? '(' + hoverCoordinates
+                                .map(coordinate => coordinate + 1).reverse().join(', ') + ')' : ''
+                        }
                         </span>
                 &nbsp;{hoverType !== 'nothing' ? hoverType : ''}
             </span>

@@ -12,6 +12,8 @@ import {isMobile} from 'detect-touch-device';
 // improve performance, update only changed and surrounding squares
 // show label and coordinates next to cursor
 
+// ? combine selected and hover states into objects
+// ? cancel button and info next to first square in selection
 // ? long press for mobile
 // ? move translation
 // ? group labels
@@ -275,19 +277,17 @@ class App extends React.Component<AppProps, AppState> {
                                         square.compatibility = compatibility;
                                     }
                                 }
-                                if (offsetSquare.type !== square.type) {
-                                    if (rowOffset === -1 && squareOffset === 0) {
-                                        square.border.push('bt');
-                                    }
-                                    else if (rowOffset === 1 && squareOffset === 0) {
-                                        square.border.push('bb');
-                                    }
-                                    else if (rowOffset === 0 && squareOffset === -1) {
-                                        square.border.push('bl');
-                                    }
-                                    else if (rowOffset === 0 && squareOffset === 1) {
-                                        square.border.push('br');
-                                    }
+                            }
+
+                            if (offsetSquare.type !== square.type) {
+                                if (rowOffset === -1 && squareOffset === 0) {
+                                    square.border.push('bt');
+                                } else if (rowOffset === 1 && squareOffset === 0) {
+                                    square.border.push('bb');
+                                } else if (rowOffset === 0 && squareOffset === -1) {
+                                    square.border.push('bl');
+                                } else if (rowOffset === 0 && squareOffset === 1) {
+                                    square.border.push('br');
                                 }
                             }
 
@@ -366,8 +366,7 @@ class App extends React.Component<AppProps, AppState> {
         if (fileData.length === 0) return;
         try {
             this.setState(fileData);
-        }
-        catch (e) {
+        } catch (e) {
             alert('Error importing data');
         }
     }
@@ -386,7 +385,9 @@ class App extends React.Component<AppProps, AppState> {
 
         fileInput.onchange = () => {
             const reader = new FileReader()
-            reader.onload = (event) => {this.loadFileData(event)};
+            reader.onload = (event) => {
+                this.loadFileData(event)
+            };
             reader.readAsText((fileInput as HTMLInputElement).files![0])
         }
 
