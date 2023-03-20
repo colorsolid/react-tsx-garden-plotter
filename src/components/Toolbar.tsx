@@ -2,6 +2,8 @@ import React, {ChangeEvent} from 'react';
 import Button from 'react-bootstrap/Button';
 
 import {plantTypes} from '../Global';
+import {Dropdown, Tooltip} from "react-bootstrap";
+import {OverlayTrigger} from "react-bootstrap";
 
 const plantTypesKeys = Object.keys(plantTypes).sort();
 plantTypesKeys.splice(0, 0, plantTypesKeys.splice(plantTypesKeys.indexOf('nothing'))[0]);
@@ -16,7 +18,7 @@ interface ToolBarProps {
     selectedMode: string,
     hoverCoordinates: number[],
     hoverType: string,
-    changeModeAndType: (type: string, mode: string) => void,
+    changeModeAndType: (mode: string, type: string) => void,
     clearSquares: () => void,
     selectionStarted: boolean,
     cancelSelection: () => void,
@@ -45,58 +47,80 @@ export function Toolbar(
     }: ToolBarProps) {
     return (
         <div id={'toolbar'}>
-            {/*<div className={'toolbar-divider'}></div>*/}
-            garden area:&nbsp;
-            {plantAreas.map((mode: string) =>
-                <Button variant={mode === selectedMode ? 'primary' : 'outline-light'}
+            <input id="file-upload" type="file" accept=".json"></input>
+            <label htmlFor="file-upload" className="d-none">
+                <span>import</span>
+            </label>
+            <Dropdown>
+                <Dropdown.Toggle variant={'dark'} size={'sm'} id={'toolbar-dropdown'}>
+                </Dropdown.Toggle>
+                <Dropdown.Menu variant={'dark'}>
+                    <Dropdown.Item>
+                        <div onClick={clearSquares}>clear</div>
+                    </Dropdown.Item>
+                    <Dropdown.Divider/>
+                    <Dropdown.Item>
+                        <div onClick={() => document.getElementById('file-upload')!.click()}>import</div>
+                    </Dropdown.Item>
+                    <Dropdown.Item>
+                        <div onClick={_export.call}>export</div>
+                    </Dropdown.Item>
+                </Dropdown.Menu>
+            </Dropdown>
+
+            <OverlayTrigger placement={'bottom'} overlay={<Tooltip>undo</Tooltip>}>
+                <Button variant={'dark'}
                         size={'sm'}
-                        key={`btn-${mode}`}
-                        onClick={() => {
-                            changeModeAndType(selectedType, mode);
-                        }}
+                        onClick={undo.call}
+                        disabled={!undo.enabled}
                 >
-                    {mode.split('-')[0]}
+                    ↶
                 </Button>
-            )}
-            <Button variant={'danger'}
-                    size={'sm'}
-                    onClick={clearSquares}
-            >
-                clear
-            </Button>
-            <Button variant={'dark'}
-                    size={'sm'}
-                    onClick={undo.call}
-                    disabled={!undo.enabled}
-            >
-                undo
-            </Button>
-            <Button variant={'dark'}
-                    size={'sm'}
-                    onClick={redo.call}
-                    disabled={!redo.enabled}
-            >
-                redo
-            </Button>
-            {isMobile && <Button
-                size={'sm'}
-                variant={selectedMode === 'inspect' ? 'primary' : 'outline-light'}
-                onClick={() => changeModeAndType(selectedType, 'inspect')}
-            >
-                inspect
-            </Button>}
+            </OverlayTrigger>
+            <OverlayTrigger placement={'bottom'} overlay={<Tooltip>redo</Tooltip>}>
+                <Button variant={'dark'}
+                        size={'sm'}
+                        onClick={redo.call}
+                        disabled={!redo.enabled}
+                >
+                    ↷
+                </Button>
+            </OverlayTrigger>
             {/*<div className={'toolbar-divider'}></div>*/}
-            <Button variant={selectedMode === 'plant' ? 'primary' : 'outline-light'}
+            <Button
+                variant={['add-plant-area', 'remove-plant-area'].includes(selectedMode) ? 'dark' : 'outline-dark'}
+                size={'sm'}
+                onClick={() => changeModeAndType((document.getElementById('garden-mode-select') as HTMLSelectElement)!.value, selectedType)}
+            >
+                garden area:&nbsp;
+                <select
+                    id={'garden-mode-select'}
+                    value={selectedMode}
+                    onChange={(event: ChangeEvent<HTMLSelectElement>) => {
+                        console.log(event.target.value)
+                        changeModeAndType(event.target.value, selectedType)
+                    }}
+                >
+                    <option key={'option-add-plant-area'} value={'add-plant-area'}>
+                        Add
+                    </option>
+                    <option key={'option-remove-plant-area'} value={'remove-plant-area'}>
+                        Remove
+                    </option>
+                </select>
+            </Button>
+            {/*<div className={'toolbar-divider'}></div>*/}
+            <Button variant={selectedMode === 'plant' ? 'dark' : 'outline-dark'}
                     size={'sm'}
-                    onClick={() => changeModeAndType((
-                        document.querySelector('#plant-select') as HTMLInputElement)!.value, 'plant')}
+                    onClick={() => changeModeAndType('plant', (
+                        document.querySelector('#plant-select') as HTMLInputElement)!.value)}
             >
                 plant&nbsp;
                 <select
                     id={'plant-select'}
                     value={selectedType}
                     onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-                        changeModeAndType(event.target.value, 'plant')
+                        changeModeAndType('plant', event.target.value)
                     }}
                 >
                     {plantTypesKeys.map((type: string) =>
@@ -106,16 +130,18 @@ export function Toolbar(
                     )}
                 </select>
             </Button>
+            {isMobile && <Button
+                size={'sm'}
+                variant={selectedMode === 'inspect' ? 'primary' : 'outline-dark'}
+                onClick={() => changeModeAndType('inspect', selectedType)}
+            >
+                inspect
+            </Button>}
             {
                 selectionStarted &&
                 <Button variant={'dark'} size={'sm'} onClick={() => cancelSelection()}>cancel</Button>
             }
             {/*<div className={'toolbar-divider'}></div>*/}
-            <input id="file-upload" type="file" accept=".json"></input>
-            <label htmlFor="file-upload" className="btn-block">
-                <span className="btn btn-sm btn-outline-warning">import</span>
-            </label>
-            <Button size={'sm'} variant={'outline-warning'} onClick={_export.call}>Export</Button>
             <span className={'toolbar-info'}>
                         <span
                             className={'coordinates'}>{hoverCoordinates ? '(' + hoverCoordinates.map(coordinate => coordinate + 1).reverse().join(', ') + ')' : ''}

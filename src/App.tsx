@@ -6,6 +6,17 @@ import {SquareObject, plantTypes} from './Global';
 
 import {isMobile} from 'detect-touch-device';
 
+
+// setting for units and garden size
+// measuring tool
+// improve performance, update only changed and surrounding squares
+// show label and coordinates next to cursor
+
+// ? long press for mobile
+// ? move translation
+// ? group labels
+// ? custom colors
+
 const WIDTH: number = 70;
 const HEIGHT: number = 70;
 
@@ -111,7 +122,7 @@ class App extends React.Component<AppProps, AppState> {
         });
     }
 
-    changeModeAndType(type: string, mode: string) {
+    changeModeAndType(mode: string, type: string) {
         this.setState({
             selectedType: type,
             selectedMode: mode
@@ -335,12 +346,19 @@ class App extends React.Component<AppProps, AppState> {
     _export() {
         const jsonString = JSON.stringify(this.state);
         const button = document.createElement('a');
-        button.setAttribute('href', 'data:text/plan;charset=utf-8,' + encodeURIComponent(jsonString))
-        button.setAttribute('download', 'plotter-data.json')
-        button.style.display = 'none';
-        document.body.appendChild(button);
-        button.click();
-        document.body.removeChild(button);
+        const fileName = window.prompt('Save file as', 'plotter-data');
+        if (fileName !== null) {
+            if (fileName.length === 0) {
+                alert('File name is invalid');
+                return;
+            }
+            button.setAttribute('href', 'data:text/plan;charset=utf-8,' + encodeURIComponent(jsonString))
+            button.setAttribute('download', fileName + '.json')
+            button.style.display = 'none';
+            document.body.appendChild(button);
+            button.click();
+            document.body.removeChild(button);
+        }
     }
 
     loadFileData(event: any) {
@@ -363,6 +381,8 @@ class App extends React.Component<AppProps, AppState> {
         }
 
         const fileInput = document.getElementById('file-upload')!;
+
+        console.log(fileInput)
 
         fileInput.onchange = () => {
             const reader = new FileReader()
